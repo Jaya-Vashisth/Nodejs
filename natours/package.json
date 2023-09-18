@@ -4,14 +4,15 @@
   "description": "Learning node,express and mongoDB",
   "main": "app.js",
   "scripts": {
-    "start": "supervisor  server.js"
-    
+    "start": "supervisor  server.js",
+    "start:prod":"NODE_ENV = production supervisor server.js"
   },
   "author": "Jaya",
   "license": "ISC",
   "dependencies": {
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "morgan": "^1.10.0" 
+    "mongoose": "^5.13.20",
+    "morgan": "^1.10.0"
   }
 }
