@@ -5,14 +5,19 @@
   "main": "app.js",
   "scripts": {
     "start": "supervisor  server.js",
-    "start:prod":"NODE_ENV = production supervisor server.js"
+    "start:prod": "NODE_ENV = production supervisor server.js",
+    "debug": "ndb server.js"
   },
   "author": "Jaya",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^5.13.20",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "slugify": "^1.6.6",
+    "validator": "^13.11.0"
   }
 }

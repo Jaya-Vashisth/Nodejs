@@ -6,6 +6,10 @@ const router = express.Router();
 //middlerware to check id is present or not
 // router.param('id', tourConroller.checkID);
 
+router.route('/tour-stats').get(tourConroller.getTourStats);
+
+router.route('/monthly-plan/:year').get(tourConroller.getMonthlyPlan);
+
 router
   .route('/top-5-cheap')
   .get(tourConroller.aliasTopTours, tourConroller.getAlltours);
