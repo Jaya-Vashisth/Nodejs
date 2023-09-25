@@ -1,6 +1,6 @@
 const express = require('express');
 const tourConroller = require('../controllers/tourController');
-
+const authController = require('./../controllers/authenticationController');
 const router = express.Router();
 
 //middlerware to check id is present or not
@@ -14,12 +14,19 @@ router
   .route('/top-5-cheap')
   .get(tourConroller.aliasTopTours, tourConroller.getAlltours);
 
-router.route('/').get(tourConroller.getAlltours).post(tourConroller.createTour);
+router
+  .route('/')
+  .get(authController.protect, tourConroller.getAlltours)
+  .post(tourConroller.createTour);
 
 router
   .route('/:id')
   .get(tourConroller.getTour)
   .patch(tourConroller.updateTour)
-  .delete(tourConroller.deleteTour);
+  .delete(
+    authController.protect,
+    authController.restrictTo('admin', 'lead-guide'),
+    tourConroller.deleteTour
+  );
 
 module.exports = router;
