@@ -1,2 +1,7 @@
 node_modules/
+<<<<<<< HEAD
 natours/config.env
+=======
+natours/config.env
+config.env
+>>>>>>> 8a9db7a3e92e2ac3e9c303596176555cbf74eea8
