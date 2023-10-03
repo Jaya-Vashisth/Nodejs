@@ -5,17 +5,18 @@ const authController = require('./../controllers/authenticationController');
 
 ///////////////////////// Routes /////////////////////////////////
 
+router.patch('/updateMe', authController.protect, userController.updateMe);
 router.post('/signup', authController.signup);
 router.post('/login', authController.login);
 
 router.post('/forgetPassword', authController.forgotPaswword);
-router.patch('/resetPassword/:token', authController.resetPassword);
-
 router.patch(
-  '/updatePassword',
+  '/updateMyPassword',
   authController.protect,
   authController.updatePassword
 );
+router.delete('/deleteMe', authController.protect, userController.deleteMe);
+router.patch('/resetPassword/:token', authController.resetPassword);
 
 router
   .route('/')
