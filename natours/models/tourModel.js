@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
-
+// const User = require('./userModel')
 const tourSchema = new mongoose.Schema(
   {
     name: {
@@ -84,6 +84,41 @@ const tourSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+
+    startLocation: {
+      //GeoJSON
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+
+      coordinates: [Number],
+      address: String,
+      description: String,
+    },
+
+    locations: [
+      {
+        type: {
+          type: String,
+          dafault: 'Point',
+          enum: ['Point'],
+        },
+
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
+
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
 
   {
@@ -91,10 +126,47 @@ const tourSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+
+// tourSchema.index({ price: 1 });
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
+
 //virtual property that cannot be accessed by urls
-tourSchema.virtual('durationWeeks').get(function () {
+tourSchema.virtual('durationInWeeks').get(function () {
   return this.duration / 7;
 });
+
+//virtual populate
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
+});
+
+//return tour that have secretTour not equal to true
+tourSchema.pre(/^find/, function (next) {
+  this.find({ secretTour: { $ne: true } });
+  this.start = Date.now();
+  next();
+});
+
+//populate the guides field with actual data
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt',
+  });
+  next();
+});
+
+//embedding guides
+
+//  tourSchema.pre('save', async function(next){
+//   const guidesPromises = this.guides.map(async id => await User.findById(id));
+//   this.guides = await Promise.all(guidesPromises);
+//   next();
+//  }
+//  );
 
 //1 .DOCUMENT MIDDLWARE:
 
@@ -113,13 +185,6 @@ tourSchema.virtual('durationWeeks').get(function () {
 // })
 
 //2.QUERY MIDDLEWARE
-
-//return tour that have secretTour not equal to true
-// tourSchema.pre('/^find/',function(next){
-//   this.find({secretTour : {$ne : true}})
-//   this.start = Date.now();
-//   next();
-// })
 
 // tourSchema.post('/^find/',function(next){
 //   console.log(`query took ${Date.now()-this.start} milliseconds`);
