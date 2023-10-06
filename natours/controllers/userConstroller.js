@@ -11,18 +11,6 @@ const filterObj = (obj, ...allowedFields) => {
   return newObj;
 };
 
-exports.getAllUsers = async (req, res) => {
-  const allusers = await User.find({});
-
-  res.status(200).json({
-    status: 'success',
-    results: allusers.length,
-    data: {
-      allusers,
-    },
-  });
-};
-
 //to be updated by user
 exports.updateMe = catchAsync(async (req, res, next) => {
   //1) create error if user POSTs password data
@@ -33,8 +21,6 @@ exports.updateMe = catchAsync(async (req, res, next) => {
         400
       )
     );
-
-  //2)update the user document
 
   //filter out unwanted fileds
   const filterBody = filterObj(req.body, 'name', 'email');
@@ -60,32 +46,21 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
     data: null,
   });
 });
-exports.getUsers = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    maessage: ' This route is not yet defined',
-  });
-};
 
 exports.createUsers = (req, res) => {
   res.status(500).json({
     status: 'error',
-    maessage: ' This route is not yet defined',
+    maessage: 'This route is not define! Please use sign up',
   });
 };
 
-exports.updateUsers = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    maessage: ' This route is not yet defined',
-  });
+//handler can be used by admins only
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
 };
 
-// exports.deleteUsers = (req, res) => {
-//   res.status(500).json({
-//     status: 'error',
-//     maessage: ' This route is not yet defined',
-//   });
-// };
-
+exports.getAllUsers = factory.getAll(User);
+exports.getUser = factory.getOne(User);
+exports.updateUser = factory.updateOne(User);
 exports.deleteUser = factory.deleteOne(User);
