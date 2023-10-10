@@ -46,6 +46,7 @@ const tourSchema = new mongoose.Schema(
       default: 4.3,
       min: [1, 'Rating must be atleast 1.0'],
       max: [5, 'Rating can atmost be 1'],
+      set: (val) => Math.round(val * 10) / 10,
     },
     ratingsQuantity: {
       type: Number,
@@ -57,7 +58,7 @@ const tourSchema = new mongoose.Schema(
     summary: {
       type: String,
       trim: true,
-      required: [true, 'A tour must have a description'],
+      required: [true, 'A tour must have a summary'],
     },
 
     description: {
@@ -130,6 +131,7 @@ const tourSchema = new mongoose.Schema(
 // tourSchema.index({ price: 1 });
 tourSchema.index({ price: 1, ratingsAverage: -1 });
 tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' });
 
 //virtual property that cannot be accessed by urls
 tourSchema.virtual('durationInWeeks').get(function () {

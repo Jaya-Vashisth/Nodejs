@@ -38,6 +38,8 @@ reviewSchema = mongoose.Schema(
   }
 );
 
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
+
 //populate user and tour data in reviews
 reviewSchema.pre(/^find/, function (next) {
   //   this.populate({
@@ -58,7 +60,8 @@ reviewSchema.pre(/^find/, function (next) {
   next();
 });
 
-reviewSchema.statics.calcAverageRating = async function (tourId) {
+reviewSchema.statics.calcAverageRatings = async function (tourId) {
+  //aggregation pipeline
   const stats = await this.aggregate([
     {
       $match: { tour: tourId },
@@ -67,16 +70,39 @@ reviewSchema.statics.calcAverageRating = async function (tourId) {
       $group: {
         _id: '$tour',
         nRating: { $sum: 1 },
-        avgRating: { $avg: 'rating' },
+        avgRating: { $avg: '$rating' },
       },
     },
   ]);
-  console.log(stats);
+
+  // console.log(stats);
+
+  if (stats.lenght > 0) {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsQuantity: stats[0].nRating,
+      ratingsAverage: stats[0].avgRating,
+    });
+  } else {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsQuantity: 0,
+      ratingsAverage: 4.5,
+    });
+  }
 };
 
-reviewSchema.pre('save', function (next) {
-  this.contructor.calcAverageRating(this.tour);
+//calculate avgrating and no of review whenever a new review created
+reviewSchema.post('save', function () {
+  this.constructor.calcAverageRatings(this.tour);
+});
+
+reviewSchema.pre(/^findOneAnd/, async function (next) {
+  this.r = await this.findOne();
+  // console.log(this.r);
   next();
+});
+
+reviewSchema.post(/^findOneAnd/, async function () {
+  await this.r.constructor.calcAverageRatings(this.r.tour);
 });
 const Review = mongoose.model('Review', reviewSchema);
 
