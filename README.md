@@ -13,4 +13,4 @@ Welcome to the Tour API documentation. This API provides a set of endpoints to m
 - **Packages Used**: jwt, bcrypt, morgan, crypto, mongoose
 
 ## Postman Collection
-You can find the Postman published documentation with pre-configured requests for this API [here](https://documenter.getpostman.com/view/17396234/2s9YJhxfVF)https://documenter.getpostman.com/view/17396234/2s9YJhxfVF).
+You can find the Postman published documentation with pre-configured requests for this API [here](https://documenter.getpostman.com/view/17396234/2s9YJhxfVF).
